@@ -6,9 +6,7 @@ fluidPage(
   tags$head(
     tags$link(href = "style.css", rel = "stylesheet"),
 
-    # Favicon
-    tags$link(rel = "shortcut icon", type="image/x-icon", href="http://daattali.com/shiny/img/favicon.ico"),
-
+ 
     # Facebook OpenGraph tags
     tags$meta(property = "og:title", content = 'rdScheduler-棱星项目管理软件'),
     tags$meta(property = "og:type", content = "website"),
@@ -50,56 +48,41 @@ fluidPage(
     ),
 
     tabPanel(
-      div(icon("cog"), "Custom style"),
-      timevisOutput("timelineCustom"),
-      div(class = "sourcecode",
-          "The exact code for all the timelines in this app is",
-          tags$a(href = "https://github.com/daattali/timevis/tree/master/inst/example",
-                 "on GitHub")
-      )
+      div(icon("cog"), "自定义样式"),
+      timevisOutput("timelineCustom")
     ),
 
     tabPanel(
-      div(icon("trophy"), "World Cup 2014"),
-      timevisOutput("timelineWC"),
-      div(class = "sourcecode",
-          "The exact code for all the timelines in this app is",
-          tags$a(href = "https://github.com/daattali/timevis/tree/master/inst/example",
-                 "on GitHub")
-      )
+      div(icon("trophy"), "世界杯"),
+      timevisOutput("timelineWC")
     ),
 
     tabPanel(
-      div(icon("users"), "Groups"),
-      timevisOutput("timelineGroups"),
-      div(class = "sourcecode",
-          "The exact code for all the timelines in this app is",
-          tags$a(href = "https://github.com/daattali/timevis/tree/master/inst/example",
-                 "on GitHub")
-      )
+      div(icon("users"), "分组"),
+      timevisOutput("timelineGroups")
     ),
 
     tabPanel(
-      div(icon("sliders"), "Fully interactive"),
+      div(icon("sliders"), "项目看板"),
       fluidRow(
         column(
           8,
           fluidRow(column(12,
-            timevisOutput("timelineInteractive")
+            timevisOutput("timelineInteractive1")
           )),
           fluidRow(
             column(
               12,
               div(id = "interactiveActions",
                   class = "optionsSection",
-                  tags$h4("Actions:"),
-                  actionButton("fit", "Fit all items"),
-                  actionButton("setWindowAnim", "Set window 2016-01-07 to 2016-01-25"),
-                  actionButton("setWindowNoAnim", "Set window without animation"),
-                  actionButton("center", "Center around 2016-01-23"),
-                  actionButton("focus2", "Focus item 4"),
-                  actionButton("focusSelection", "Focus current selection"),
-                  actionButton("addTime", "Add a draggable vertical bar 2016-01-17")
+                  tags$h4("操作列表:"),
+                  actionButton("fit", "显示所有项目"),
+                  actionButton("setWindowAnim", "显示2016-01-07 到2016-01-25期间项目(带动画)"),
+                  actionButton("setWindowNoAnim", "显示2016-01-07 到2016-01-25期间项目(不带动画)"),
+                  actionButton("center", "跳转至2016-01-23"),
+                  actionButton("focus2", "跳转至项目4"),
+                  actionButton("focusSelection", "聚焦至当前选择的项目"),
+                  actionButton("addTime", "在2016-01-17附近添加一条可移动的垂直分隔线")
               )
             )
           ),
@@ -108,23 +91,23 @@ fluidPage(
               4,
               div(class = "optionsSection",
                   uiOutput("selectIdsOutput", inline = TRUE),
-                  actionButton("selectItems", "Select"),
-                  checkboxInput("selectFocus", "Focus on selection", FALSE)
+                  actionButton("selectItems", "选择项目"),
+                  checkboxInput("selectFocus", "选中项目时聚焦", FALSE)
               )
             ),
             column(
               4,
               div(class = "optionsSection",
-                  textInput("addText", tags$h4("Add item:"), "New item"),
+                  textInput("addText", tags$h4("添加项目:"), "新项目"),
                   dateInput("addDate", NULL, "2016-01-15"),
-                  actionButton("addBtn", "Add")
+                  actionButton("addBtn", "添加项目")
               )
             ),
             column(
               4,
               div(class = "optionsSection",
                   uiOutput("removeIdsOutput", inline = TRUE),
-                  actionButton("removeItem", "Remove")
+                  actionButton("removeItem", "删除指定项目")
               )
             )
           )
@@ -133,20 +116,15 @@ fluidPage(
            div(
              id = "timelinedata",
              class = "optionsSection",
-             tags$h4("Data:"),
+             tags$h4("项目数据列表:"),
              tableOutput("table"),
              hr(),
-             div(tags$strong("Visible window:"),
+             div(tags$strong("可见窗口范围:"),
                  textOutput("window", inline = TRUE)),
-             div(tags$strong("Selected items:"),
+             div(tags$strong("当前选中项目的ID为:"),
                  textOutput("selected", inline = TRUE))
            )
         )
-      ),
-      div(class = "sourcecode",
-          "The exact code for all the timelines in this app is",
-          tags$a(href = "https://github.com/daattali/timevis/tree/master/inst/example",
-                 "on GitHub")
       )
     )
   )

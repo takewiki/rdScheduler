@@ -4,18 +4,14 @@ source("sampleData.R")
 source("utils.R")
 
 function(input, output, session) {
+  #sheet1-基本图形------
   output$timelineBasic <- renderTimevis({
-    timevis(dataBasic)
-  })
 
-  output$timelineWC <- renderTimevis({
-    timevis(dataWC)
+    data = rdSchedulePkg::projectData_basic()
+    timevis(data)
   })
-
-  output$timelineGroups <- renderTimevis({
-    timevis(data = dataGroups, groups = groups, options = list(editable = TRUE))
-  })
-
+  
+  #自定义样式--------
   output$timelineCustom <- renderTimevis({
     config <- list(
       editable = TRUE,
@@ -26,8 +22,19 @@ function(input, output, session) {
     )
     timevis(dataBasic, zoomFactor = 1, options = config)
   })
+  
+  
+  #世界杯----
+  output$timelineWC <- renderTimevis({
+    timevis(dataWC)
+  })
 
-  output$timelineInteractive <- renderTimevis({
+  output$timelineGroups <- renderTimevis({
+    timevis(data = dataGroups, groups = groups, options = list(editable = TRUE,showTooltips	=TRUE))
+  })
+
+
+  output$timelineInteractive1 <- renderTimevis({
     config <- list(
       editable = TRUE,
       multiselect = TRUE
@@ -36,62 +43,76 @@ function(input, output, session) {
   })
 
   output$selected <- renderText(
-    paste(input$timelineInteractive_selected, collapse = " ")
+    paste(input$timelineInteractive1_selected, collapse = " ")
   )
   output$window <- renderText(
-    paste(prettyDate(input$timelineInteractive_window[1]),
+    paste(prettyDate(input$timelineInteractive1_window[1]),
           "to",
-          prettyDate(input$timelineInteractive_window[2]))
+          prettyDate(input$timelineInteractive1_window[2]))
   )
+  
+  #项目数据列表-------
   output$table <- renderTable({
-    data <- input$timelineInteractive_data
+    data <- input$timelineInteractive1_data
     data$start <- prettyDate(data$start)
     if(!is.null(data$end)) {
       data$end <- prettyDate(data$end)
     }
     data
   })
+  #可供选择项目列表-----
   output$selectIdsOutput <- renderUI({
-    selectInput("selectIds", tags$h4("Select items:"), input$timelineInteractive_ids,
+    selectInput("selectIds", tags$h4("可供选择项目列表:"), input$timelineInteractive1_ids,
                 multiple = TRUE)
   })
+  #可供删除的项目-----
   output$removeIdsOutput <- renderUI({
-    selectInput("removeIds", tags$h4("Remove item"), input$timelineInteractive_ids)
+    selectInput("removeIds", tags$h4("可供删除的项目列表"), input$timelineInteractive1_ids)
   })
-
+  #显示所有项目------
   observeEvent(input$fit, {
-    fitWindow("timelineInteractive")
+    fitWindow("timelineInteractive1")
   })
+  #显示指定时间范围内的窗口，带动画------
   observeEvent(input$setWindowAnim, {
-    setWindow("timelineInteractive", "2016-01-07", "2016-01-25")
+    setWindow("timelineInteractive1", "2016-01-07", "2016-01-25")
   })
+  #显示指定时间范围内的窗口，不带动画-------
   observeEvent(input$setWindowNoAnim, {
-    setWindow("timelineInteractive", "2016-01-07", "2016-01-25",
+    setWindow("timelineInteractive1", "2016-01-07", "2016-01-25",
               options = list(animation = FALSE))
   })
+  #跳转到指定日期的项目--------
   observeEvent(input$center, {
-    centerTime("timelineInteractive", "2016-01-23")
+    centerTime("timelineInteractive1", "2016-01-23")
   })
+  #跳转至指定ID的项目，也相当于按ID号进行了搜索-----
   observeEvent(input$focus2, {
-    centerItem("timelineInteractive", 4)
+    centerItem("timelineInteractive1", 4)
   })
+  #跳转到已指定的项目，通过选择器进行选择或鼠标进行选择------
   observeEvent(input$focusSelection, {
-    centerItem("timelineInteractive", input$timelineInteractive_selected)
+    centerItem("timelineInteractive1", input$timelineInteractive1_selected)
   })
+  #在2016-01-17附近添加一条可移动的垂直分隔线-----
+  observeEvent(input$addTime, {
+    addCustomTime("timelineInteractive1", "2016-01-17", randomID())
+  })
+  #选中项目，当选中时自动聚焦----------
   observeEvent(input$selectItems, {
-    setSelection("timelineInteractive", input$selectIds,
+    setSelection("timelineInteractive1", input$selectIds,
                  options = list(focus = input$selectFocus))
   })
+  #添加项目------
   observeEvent(input$addBtn, {
-    addItem("timelineInteractive",
+    addItem("timelineInteractive1",
             data = list(id = randomID(),
                         content = input$addText,
                         start = input$addDate))
   })
+  #
   observeEvent(input$removeItem, {
-    removeItem("timelineInteractive", input$removeIds)
+    removeItem("timelineInteractive1", input$removeIds)
   })
-  observeEvent(input$addTime, {
-    addCustomTime("timelineInteractive", "2016-01-17", randomID())
-  })
+
 }

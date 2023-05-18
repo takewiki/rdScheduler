@@ -6,6 +6,13 @@ dataBasic <- data.frame(
   end    = c(NA, NA, "2016-02-04", NA)
 )
 
+dataBasic2 <- data.frame(
+  id = 1:4,
+  content = c("A0014-业务流程", "A0015-数据流图" ,"A0017-数据字典", "A0018-接口说明"),
+  start   = c("2023-05-17 09:00:00", "2023-05-17 11:00:00", "2023-05-17 14:00:00", "2023-05-17 16:00:00"),
+  end    = c("2023-05-17 11:00:00", "2023-05-17 14:00:00", "2023-05-17 16:00:00", "2023-05-17 18:00:00")
+)
+
 
 # Template for world cup HTML of each item
 templateWC <- function(stage, team1, team2, score1, score2) {
@@ -58,6 +65,10 @@ dataGroups <- data.frame(
               "Open", "Open", "Half price entry",
               "Staff meeting", "Open", "Adults only", "Open", "Hot tub closes",
               "Siesta"),
+  title = c("项目1的备注我想看一下有多少内容;再试一下,看一下可以显示多少内容啊", "Open",
+              "Open", "Open", "Half price entry",
+              "Staff meeting", "Open", "Adults only", "Open", "Hot tub closes",
+              "Siesta"),
   start = c("2016-05-01 07:30:00", "2016-05-01 14:00:00",
             "2016-05-01 06:00:00", "2016-05-01 14:00:00", "2016-05-01 08:00:00",
             "2016-05-01 08:00:00", "2016-05-01 08:30:00", "2016-05-01 14:00:00",
@@ -68,11 +79,11 @@ dataGroups <- data.frame(
             "2016-05-01 08:30:00", "2016-05-01 12:00:00", "2016-05-01 16:00:00",
             "2016-05-01 20:00:00", NA,
             "2016-05-01 14:00:00"),
-  group = c(rep("lib", 2), rep("gym", 3), rep("pool", 5), NA),
+  group = c(rep("卢晓益", 2), rep("肖桃", 3), rep("张志", 5), '张超阳'),
   type = c(rep("range", 9), "point", "background")
 )
 
 groups <- data.frame(
-  id = c("lib", "gym", "pool"),
-  content = c("Library", "Gym", "Pool")
+  id = c("卢晓益", "肖桃", "张志","张超阳"),
+  content = c("卢晓益1", "肖桃2", "张志3","张超阳4")
 )
