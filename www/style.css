@@ -208,7 +208,7 @@ body {
 }
 
 #timelineCustom .vis-item.vis-selected {
-  border-color: green;
+  border-color: blue;
   background-color: lightgreen;
 }
 
@@ -231,6 +231,8 @@ body {
   border-width: 2px;
   border-color: #F991A3;
 }
+
+
 
 #timelineInteractive {
   box-shadow: 2px 2px 3px #444;
