@@ -4,8 +4,12 @@ source("sampleData.R")
 source("utils.R")
 
 function(input, output, session) {
+  #添加自动舒心控制
+  auto_refresh <- reactiveTimer(60000,session = session)
   #sheet1-基本图形------
   output$timelineBasic <- renderTimevis({
+    
+    auto_refresh()
     config <- list(
       editable = TRUE,
       showTooltips	=TRUE,
@@ -16,10 +20,14 @@ function(input, output, session) {
     )
 
     data = rdSchedulePkg::data_query(status = 'open')
-    timevis(data,groups = groups2 ,zoomFactor = 1,options = config)
+    timevis(data,groups = groups2 ,zoomFactor = 1,options = config,fit = FALSE)
+    #
   })
+  #centerTime("timelineBasic", tsdo::getTime())
+  
   #逾期中--------
   output$timelineCustom <- renderTimevis({
+    #设置自动更新
     config <- list(
       editable = TRUE,
       showTooltips	=TRUE,
@@ -30,7 +38,7 @@ function(input, output, session) {
     )
     data = rdSchedulePkg::data_overDue()
     #data = rdSchedulePkg::data_query(status = 'close')
-    timevis(data,groups = groups2 ,zoomFactor = 1, options = config)
+    timevis(data,groups = groups2 ,zoomFactor = 1, options = config,fit = FALSE)
   })
   
   #已完成
@@ -149,7 +157,8 @@ function(input, output, session) {
   })
   #跳转到指定日期的项目--------
   observeEvent(input$center, {
-    centerTime("timelineBasic", tsdo::getDate())
+    #auto_refresh()
+    centerTime("timelineBasic", tsdo::getTime())
   })
   #跳转至指定ID的项目，也相当于按ID号进行了搜索-----
   observeEvent(input$focus2, {
