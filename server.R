@@ -18,22 +18,7 @@ function(input, output, session) {
     data = rdSchedulePkg::data_query(status = 'open')
     timevis(data,groups = groups2 ,zoomFactor = 1,options = config)
   })
-  #逾期中
-  output$timelineOverDue <- renderTimevis({
-    config <- list(
-      editable = TRUE,
-      showTooltips	=TRUE,
-      align = "center",
-      orientation = "both",
-      snap = NULL,
-      margin = list(item = 30, axis = 50)
-    )
-    
-    data = rdSchedulePkg::data_overDue()
-    timevis(data,groups = groups2 ,zoomFactor = 1,options = config)
-  })
-  
-  #自定义样式--------
+  #逾期中--------
   output$timelineCustom <- renderTimevis({
     config <- list(
       editable = TRUE,
@@ -43,10 +28,28 @@ function(input, output, session) {
       snap = NULL,
       margin = list(item = 30, axis = 50)
     )
-    data = rdSchedulePkg::data_query(status = 'close')
+    data = rdSchedulePkg::data_overDue()
+    #data = rdSchedulePkg::data_query(status = 'close')
     timevis(data,groups = groups2 ,zoomFactor = 1, options = config)
   })
   
+  #已完成
+  output$timelineFinished <- renderTimevis({
+    config <- list(
+      editable = TRUE,
+      showTooltips	=TRUE,
+      align = "center",
+      orientation = "both",
+      snap = NULL,
+      margin = list(item = 30, axis = 50)
+    )
+    
+    #data = rdSchedulePkg::data_overDue()
+    data = rdSchedulePkg::data_query(status = 'close')
+    timevis(data,groups = groups2 ,zoomFactor = 1,options = config)
+  })
+  
+
   
 
 
@@ -80,7 +83,7 @@ function(input, output, session) {
     data
   })
   output$table_overDue <- renderTable({
-    data <- input$timelineOverDue_data
+    data <- input$timelineCustom_data
     data$start <- prettyDate(data$start)
     if(!is.null(data$end)) {
       data$end <- prettyDate(data$end)
@@ -88,7 +91,7 @@ function(input, output, session) {
     data
   })
   output$table_close <- renderTable({
-    data <- input$timelineCustom_data
+    data <- input$timelineFinished_data
     data$start <- prettyDate(data$start)
     if(!is.null(data$end)) {
       data$end <- prettyDate(data$end)
@@ -120,10 +123,10 @@ function(input, output, session) {
      rdSchedulePkg::task_close(FId = id,FStart = start,FEnd = end,FNote = note)
      #更新处理中的状态,包括处理中及逾期部分
      removeItem("timelineBasic", id)
-     try(removeItem("timelineOverDue", id))
+     try(removeItem("timelineCustom", id))
      #更新所有项目窗口
      fitWindow("timelineBasic")
-     fitWindow("timelineOverDue")
+     fitWindow("timelineCustom")
      #通知用户
      tsui::pop_notice(paste0(id,"汇报完成,数据已更新！"))
    

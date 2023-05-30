@@ -89,7 +89,7 @@ fluidPage(
 
     tabPanel(
       div(icon("calendar"), "已逾期"),
-      timevisOutput("timelineOverDue")
+      timevisOutput("timelineCustom")
     ),
     tabPanel(
       div(icon("sliders"), "数据列表-已逾期"),
@@ -112,7 +112,7 @@ fluidPage(
     ),
     tabPanel(
       div(icon("calendar"), "已完成"),
-      timevisOutput("timelineCustom")
+      timevisOutput("timelineFinished")
     ),
     tabPanel(
       div(icon("sliders"), "数据列表-已完成"),
