@@ -2,7 +2,7 @@
 source("ui-helpers.R")
 
 fluidPage(
-  title = "rdScheduler-棱星项目管理软件",
+  title = "rdScheduler-棱星项目管理软件",tsui::use_pop(),
   tags$head(
     tags$link(href = "style.css", rel = "stylesheet")
 
@@ -22,74 +22,166 @@ fluidPage(
   tabsetPanel(
     id = "mainnav",
     tabPanel(
-      div(icon("calendar"), "基本情况"),
-      fluidRow(
-        column(
-          8,
-          div(id = "interactiveActions",
-              class = "optionsSection",
-              tags$h4("操作列表:"),
-              actionButton("fit", "显示所有报告中的项目"),
-              actionButton("setWindowAnim", "显示2023-05-15 到2023-05-28期间项目(带动画)"),
-              actionButton("setWindowNoAnim", "显示2023-05-15 到2023-05-28期间项目(不带动画)"),
-              actionButton("center", "跳转至今天"),
-              actionButton("focus2", "跳转至项目A0018"),
-              actionButton("focusSelection", "聚焦至当前选择的项目"),
-              actionButton("addTime", "在2023-05-21附近添加一条可移动的垂直分隔线")
-           
-          )
-        ),
-        column(4,   div(class = "optionsSection",
-                        uiOutput("selectIdsOutput", inline = TRUE),
-                        actionButton("selectItems", "选择项目"),
-                        checkboxInput("selectFocus", "选中项目时聚焦", TRUE)
-        ))
-      ),
+      div(icon("calendar"), "处理中"),
+      
+        fluidRow(column(2,     dropdownButton(
+          inputId = "opt_global",
+          label = '查看选项',
+          icon = icon("cog"),
+          status = "primary",
+          circle = FALSE,
+          tsui::mdl_dateRange(id = 'open_dateRange',label = '请选择时间范围'),
+          fluidRow(column(6,actionButton("fit", "所有任务")),
+                   column(6, actionButton("setWindowAnim", "期间任务"))),
+          br(),
+          hr(),
+          fluidRow(column(6,actionButton("center", "今天任务")),column(6,NULL))
+        )),column(2   ,  dropdownButton(
+          inputId = "opt_close_normal",
+          label = '任务完成汇报',
+          icon = icon("cog"),
+          status = "primary",
+          circle = FALSE,
+          uiOutput("selectIdsOutput", inline = TRUE),
+          br(),
+    
+          shinyDatetimePickers::datetimeMaterialPickerInput(inputId = 'taskClose_startDate',label = '实际开始时间',value = Sys.time()-60*60*2,disableFuture = T),
+          br(),
+          shinyDatetimePickers::datetimeMaterialPickerInput(inputId = 'taskClose_endDate',label = '实际完成时间',value = Sys.time(),disableFuture = T),
+          br(),
+          textAreaInput('taskClose_note',label = '任务完成情况说明',value = '正常完成',rows = 4,cols = 50),
+          tsui::layout_2C(x =shinyWidgets::actionBttn("selectItems", "查看任务") ,
+                          y = shinyWidgets::actionBttn("setTaskDone", "完成任务") )
+          
+         
+        
+        )),column(8,NULL)),
+   
+   
+   
+      
+     
+
       timevisOutput("timelineBasic")
+
+    
     
     ),
-
     tabPanel(
-      div(icon("cog"), "自定义样式"),
-      timevisOutput("timelineCustom")
-    ),
-    
-    tabPanel(
-      div(icon("cog"), "添加项目"),
-      div(class = "optionsSection",
-          textInput("addText", tags$h4("添加项目:"), "新项目"),
-          dateInput("addDate", NULL, "2016-01-15"),
-          actionButton("addBtn", "添加项目")
-      )
-    ),
-
-    tabPanel(
-      div(icon("cog"), "删除项目"),
-      div(class = "optionsSection",
-          uiOutput("removeIdsOutput", inline = TRUE),
-          actionButton("removeItem", "删除指定项目")
-      )
-    ),
-
-
-    tabPanel(
-      div(icon("sliders"), "项目看板"),
+      div(icon("sliders"), "数据列表-处理中"),
       fluidRow(
-  
+        
         column(12,
-           div(
-             id = "timelinedata",
-             class = "optionsSection",
-             tags$h4("项目数据列表:"),
-             tableOutput("table"),
-             hr(),
-             div(tags$strong("可见窗口范围:"),
-                 textOutput("window", inline = TRUE)),
-             div(tags$strong("当前选中项目的ID为:"),
-                 textOutput("selected", inline = TRUE))
-           )
+               div(
+                 id = "timelinedata",
+                 class = "optionsSection",
+                 tags$h4("项目数据列表:"),
+                 tableOutput("table_open"),
+                 hr(),
+                 div(tags$strong("可见窗口范围:"),
+                     textOutput("window_open", inline = TRUE)),
+                 div(tags$strong("当前选中项目的ID为:"),
+                     textOutput("open_selected", inline = TRUE))
+               )
         )
       )
+    ),
+
+    tabPanel(
+      div(icon("calendar"), "已逾期"),
+      timevisOutput("timelineOverDue")
+    ),
+    tabPanel(
+      div(icon("sliders"), "数据列表-已逾期"),
+      fluidRow(
+        
+        column(12,
+               div(
+                 id = "timelinedata",
+                 class = "optionsSection",
+                 tags$h4("项目数据列表:"),
+                 tableOutput("table_overDue"),
+                 hr(),
+                 div(tags$strong("可见窗口范围:"),
+                     textOutput("window_overDue", inline = TRUE)),
+                 div(tags$strong("当前选中项目的ID为:"),
+                     textOutput("overDue_selected", inline = TRUE))
+               )
+        )
+      )
+    ),
+    tabPanel(
+      div(icon("calendar"), "已完成"),
+      timevisOutput("timelineCustom")
+    ),
+    tabPanel(
+      div(icon("sliders"), "数据列表-已完成"),
+      fluidRow(
+        
+        column(12,
+               div(
+                 id = "timelinedata",
+                 class = "optionsSection",
+                 tags$h4("项目数据列表:"),
+                 tableOutput("table_close"),
+                 hr(),
+                 div(tags$strong("可见窗口范围:"),
+                     textOutput("window_close", inline = TRUE)),
+                 div(tags$strong("当前选中项目的ID为:"),
+                     textOutput("close_selected", inline = TRUE))
+               )
+        )
+      )
+    ),
+    
+    tabPanel(
+      div(icon("sliders"), "添加任务-WBS类"),
+      div(class = "optionsSection",
+          fluidRow(column(4, tsui::uiTemplate('dataWBS'),
+                          h4('请下载以上WBS类任务上传模板,参照前3行示例整理数据'),
+                          shinyWidgets::actionBttn(inputId = 'btn_wbs_getMaxNumber',label = '获取最新WBS任务ID'),
+                          verbatimTextOutput('txt_wbs_getMaxNumber'),
+                          h4('请以上述编码作为您新增的第1个任务ID,逐行+1进行编码'),
+                          h4('记得删除前3行的示例数据,系统也将自动删除'),
+                          tsui::mdl_file(id = 'file_wbs',label = '选择WBS文件'),
+                          actionButton("btn_task_wbs_preview", "预览WBS任务数据"),
+                          actionButton("btn_task_wbs_upload", "上传WBS任务数据")),
+                   column(8, tsui::uiScrollX(tsui::mdl_dataTable('dt_task_wbs'))))
+        
+         
+      )
+    ),
+
+    
+    tabPanel(
+      div(icon("sliders"), "添加任务-QA类"),
+      div(class = "optionsSection",
+          fluidRow(column(4, tsui::uiTemplate('dataQA'),
+                          h4('请下载以上QA类任务上传模板,参照前3行示例整理数据'),
+                          shinyWidgets::actionBttn(inputId = 'btn_qa_getMaxNumber',label = '获取最新QA任务ID'),
+                          verbatimTextOutput('txt_qa_getMaxNumber'),
+                          h4('请以上述编码作为您新增的第1个任务ID,逐行+1进行编码'),
+                          h4('记得删除前3行的示例数据,系统也将自动删除'),
+                          tsui::mdl_file(id = 'file_qa',label = '选择QA文件'),
+                          actionButton("btn_task_qa_preview", "预览QA任务数据"),
+                          actionButton("btn_task_qa_upload", "上传QA任务数据"),
+                          ),
+                   column(8,tsui::uiScrollX(tsui::mdl_dataTable('dt_task_qa'))))
+         
+      )
     )
+    
+    # tabPanel(
+    #   div(icon("cog"), "删除项目"),
+    #   div(class = "optionsSection",
+    #       uiOutput("removeIdsOutput", inline = TRUE),
+    #       actionButton("removeItem", "删除指定项目")
+    #   )
+    # ),
+
+
+   
+  
+
   )
 )
