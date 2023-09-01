@@ -117,8 +117,11 @@ function(input, output, session) {
   })
   
   #设置任务已完成--------
+  var_taskRptStaus = tsui::var_ListChoose1('taskRptStaus')
   observeEvent(input$setTaskDone,{
     #直接使用列表进行选择,更准确一点---
+    #项目汇报状态
+    FStatus = var_taskRptStaus()
     id = input$selectIds
     #print(id)
     start =as.character(input$taskClose_startDate)
@@ -128,13 +131,16 @@ function(input, output, session) {
     # print(as.character(input$taskClose_endDate))
     note = input$taskClose_note
     # print(input$taskClose_note)
-     rdSchedulePkg::task_close(FId = id,FStart = start,FEnd = end,FNote = note)
+     rdSchedulePkg::task_close(FId = id,FStart = start,FEnd = end,FNote = note,FStatus = FStatus)
      #更新处理中的状态,包括处理中及逾期部分
-     removeItem("timelineBasic", id)
-     try(removeItem("timelineCustom", id))
-     #更新所有项目窗口
-     fitWindow("timelineBasic")
-     fitWindow("timelineCustom")
+     if(FStatus == 'close'){
+       removeItem("timelineBasic", id)
+       try(removeItem("timelineCustom", id))
+       #更新所有项目窗口
+       fitWindow("timelineBasic")
+       fitWindow("timelineCustom")
+     }
+     
      #通知用户
      tsui::pop_notice(paste0(id,"汇报完成,数据已更新！"))
    
@@ -277,6 +283,15 @@ function(input, output, session) {
     output$txt_qa_getMaxNumber <- renderText({
       rdSchedulePkg::taskId_NextValue(type = 'QA')
     })
+  })
+  
+  #查询日报
+  observeEvent(input$btn_task_dailyRpt_query,{
+    
+    data = rdSchedulePkg::taskDailyRpt_query()
+    tsui::run_dataTable2(id = 'dt_task_dailyRpt_dataView',data = data)
+    file_name = paste0("棱星数据工作日报_",tsdo::getDate(),".xlsx")
+    tsui::run_download_xlsx(id = 'btn_task_dailyRpt_dl',data = data,filename = file_name)
   })
 
 }

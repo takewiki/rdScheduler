@@ -38,12 +38,13 @@ fluidPage(
           fluidRow(column(6,actionButton("center", "今天任务")),column(6,NULL))
         )),column(2   ,  dropdownButton(
           inputId = "opt_close_normal",
-          label = '任务完成汇报',
+          label = '任务汇报',
           icon = icon("cog"),
           status = "primary",
           circle = FALSE,
           uiOutput("selectIdsOutput", inline = TRUE),
           br(),
+          tsui::mdl_ListChoose1(id = 'taskRptStaus',label = '任务状态',choiceNames = list('进行中','已完成'),choiceValues = list('open','close'),selected = 'open'),
     
           shinyDatetimePickers::datetimeMaterialPickerInput(inputId = 'taskClose_startDate',label = '实际开始时间',value = Sys.time()-60*60*2,disableFuture = T),
           br(),
@@ -51,7 +52,7 @@ fluidPage(
           br(),
           textAreaInput('taskClose_note',label = '任务完成情况说明',value = '正常完成',rows = 4,cols = 50),
           tsui::layout_2C(x =shinyWidgets::actionBttn("selectItems", "查看任务") ,
-                          y = shinyWidgets::actionBttn("setTaskDone", "完成任务") )
+                          y = shinyWidgets::actionBttn("setTaskDone", "汇报任务") )
           
          
         
@@ -168,6 +169,17 @@ fluidPage(
                           ),
                    column(8,tsui::uiScrollX(tsui::mdl_dataTable('dt_task_qa'))))
          
+      )
+    ),
+    tabPanel(
+      div(icon("sliders"), "工作日报"),
+      div(class = "optionsSection",
+          fluidRow(column(3, h4('查询当天的日报数据,请及时查询及下载'),
+                          actionButton("btn_task_dailyRpt_query", "查询日报"),
+                          tsui::mdl_download_button(id = 'btn_task_dailyRpt_dl',label = '下载日报')
+          ),
+          column(9,tsui::uiScrollX(tsui::mdl_dataTable('dt_task_dailyRpt_dataView'))))
+          
       )
     )
     
