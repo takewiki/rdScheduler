@@ -111,6 +111,12 @@ function(input, output, session) {
     selectInput("selectIds", tags$h4("执行中任务列表:"), input$timelineBasic_ids,
                 multiple = FALSE)
   })
+  
+  output$selectIdsOutput_change <- renderUI({
+    selectInput("selectIds_change", tags$h4("待变更的任务列表:"), input$timelineBasic_ids,
+                multiple = FALSE)
+  })
+  
   #可供删除的项目-----
   output$removeIdsOutput <- renderUI({
     selectInput("removeIds", tags$h4("可供删除的项目列表"), input$timelineBasic_ids)
@@ -292,6 +298,35 @@ function(input, output, session) {
     tsui::run_dataTable2(id = 'dt_task_dailyRpt_dataView',data = data)
     file_name = paste0("棱星数据工作日报_",tsdo::getDate(),".xlsx")
     tsui::run_download_xlsx(id = 'btn_task_dailyRpt_dl',data = data,filename = file_name)
+  })
+  
+  #任务变更功能-----
+  var_taskChange_password <- tsui::var_password('taskChange_password')
+  observeEvent(input$taskchange_setEndDate,{
+    #添加任务变更功能
+    password = var_taskChange_password()
+    #显示密码内容
+    print(password)
+    #任务ID
+    id = input$selectIds_change
+    #最后完成时间
+    endDate = input$taskChange_endDate
+    #变更原因
+    FNote = input$taskChange_note
+    flag = rdSchedulePkg::password_check(dms_token = dms_token,password = password)
+    if(flag){
+      #密码正确
+      try(rdSchedulePkg::task_changeEndDate(dms_token = dms_token,id =id ,endDate = endDate,FNote =FNote ))
+      fitWindow("timelineBasic")
+      tsui::pop_notice('变更成功')
+      
+    }else{
+      #密码错误
+      tsui::pop_notice('密码错误,请重新输入或联系人事经理!')
+    }
+   
+    
+    
   })
 
 }

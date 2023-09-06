@@ -46,9 +46,9 @@ fluidPage(
           br(),
           tsui::mdl_ListChoose1(id = 'taskRptStaus',label = '任务状态',choiceNames = list('进行中','已完成'),choiceValues = list('open','close'),selected = 'open'),
     
-          shinyDatetimePickers::datetimeMaterialPickerInput(inputId = 'taskClose_startDate',label = '实际开始时间',value = Sys.time()-60*60*2,disableFuture = T),
+          shinyDatetimePickers::datetimeMaterialPickerInput(inputId = 'taskClose_startDate',label = '实际开始时间',value = tsdo::getTime_offSet(offset = -60*60*2,timeZone = 8),disableFuture = T),
           br(),
-          shinyDatetimePickers::datetimeMaterialPickerInput(inputId = 'taskClose_endDate',label = '实际完成时间',value = Sys.time(),disableFuture = T),
+          shinyDatetimePickers::datetimeMaterialPickerInput(inputId = 'taskClose_endDate',label = '实际完成时间',value = tsdo::getTime_offSet(timeZone = 8),disableFuture = T),
           br(),
           textAreaInput('taskClose_note',label = '任务完成情况说明',value = '正常完成',rows = 4,cols = 50),
           tsui::layout_2C(x =shinyWidgets::actionBttn("selectItems", "查看任务") ,
@@ -56,7 +56,22 @@ fluidPage(
           
          
         
-        )),column(8,NULL)),
+        )),
+        column(2,dropdownButton(inputId = 'opt_task_change',label = '任务变更',icon = icon('cog'),status = 'primary',circle = FALSE,
+                                tags$h4('任务时间变更'),
+                                tsui::mdl_password(id = 'taskChange_password',label = '请输入管理员密码'),
+                                uiOutput("selectIdsOutput_change", inline = TRUE),
+                                shinyDatetimePickers::datetimeMaterialPickerInput(inputId = 'taskChange_endDate',label = '变更后完成时间',value = tsdo::getTime_offSet(timeZone = 8),disablePast = TRUE),
+                                br(),
+                                textAreaInput('taskChange_note',label = '任务变更说明',value = '请填写变更原因:',rows = 4,cols = 50),
+                                br(),
+                                shinyWidgets::actionBttn(inputId = 'taskchange_setEndDate',label = '变更完成时间')
+                                
+                      
+                                
+                                )
+               ),
+        column(6,NULL)),
    
    
    
